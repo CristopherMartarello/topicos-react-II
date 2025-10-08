@@ -141,7 +141,7 @@ export default function ArtistDetails() {
                   className="h-full w-full object-cover"
                 />
               </Card>
-              <div className="p-3 text-center">"{album.strAlbum}"</div>
+              <div className="truncate p-3 text-center">"{album.strAlbum}"</div>
             </div>
           ))}
         </div>

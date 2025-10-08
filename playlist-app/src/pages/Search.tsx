@@ -158,7 +158,7 @@ export default function Search() {
                     </div>
                   </Card>
 
-                  <div className="mt-3 text-center text-sm text-white">
+                  <div className="mt-3 truncate text-center text-sm text-white">
                     "{track.strTrack}"
                   </div>
                 </div>
@@ -187,7 +187,7 @@ export default function Search() {
                     className="h-full w-full object-cover"
                   />
                 </Card>
-                <div className="mt-3 text-center text-sm text-white">
+                <div className="mt-3 truncate text-center text-sm text-white">
                   "{artist.strArtist}"
                 </div>
               </div>

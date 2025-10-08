@@ -44,9 +44,7 @@ export default function MusicList({ items, albumThumb }: MusicListProps) {
                 />
                 <div>
                   <div className="font-semibold text-white">{m.strTrack}</div>
-                  <div className="text-sm text-gray-400">
-                    {m.strArtist} • {m.strGenre}
-                  </div>
+                  <div className="text-sm text-gray-400">{m.strArtist}</div>
                 </div>
               </div>
 

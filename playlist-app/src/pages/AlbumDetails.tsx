@@ -69,13 +69,13 @@ export default function AlbumDetails() {
               }}
             >
               <div className="absolute bottom-0 left-0 h-full w-full bg-gradient-to-b from-transparent to-zinc-900" />
-              <div className="relative z-10 space-y-6 rounded">
+              <div className="relative z-10 mt-20 space-y-6 rounded">
                 <img
                   src={album.strAlbumThumb || Logo}
                   alt={album.strAlbum}
-                  className="h-1/2 w-1/2 object-contain"
+                  className="mb-4 h-56 object-contain"
                 />
-                <h1 className="mt-12 text-5xl font-bold">{album.strAlbum}</h1>
+                <h1 className="mt-12 text-4xl font-bold">{album.strAlbum}</h1>
                 <InfoTags
                   items={[
                     album.strStyle,

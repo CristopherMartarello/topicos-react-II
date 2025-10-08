@@ -132,7 +132,7 @@ const Home = () => {
                 />
               </Card>
 
-              <div className="mt-3 text-center text-sm text-white">
+              <div className="mt-3 truncate text-center text-sm text-white">
                 "{artist.strArtist}"
               </div>
             </div>

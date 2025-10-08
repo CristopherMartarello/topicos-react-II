@@ -1,0 +1,25 @@
+export type Album = {
+  idAlbum: string;
+  strAlbum: string;
+  strLabel?: string;
+  strAlbumThumb?: string;
+  strAlbumThumbHQ?: string;
+  strAlbumCDart?: string;
+  strAlbum3DCase?: string;
+  strAlbum3DFace?: string;
+  strAlbum3DFlat?: string;
+  strAlbum3DThumb?: string;
+  strAlbumBack?: string;
+  strAlbumSpine?: string;
+  intYearReleased?: string;
+  strStyle?: string;
+  strGenre?: string;
+  strArtist?: string;
+  strMusicBrainzID?: string;
+  intSales?: string;
+  intLoved?: string | null;
+  intScore?: string;
+  intScoreVotes?: string;
+  strSpeed?: string;
+  strTheme?: string;
+};

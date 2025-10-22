@@ -44,7 +44,7 @@ export default function AppLayout() {
         }}
       >
         Online Shop | IFSC ©{new Date().getFullYear()} Created by Cristopher and
-        Fernando Martarello
+        Fernando
       </Footer>
     </div>
   );

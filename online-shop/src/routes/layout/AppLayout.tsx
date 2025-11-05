@@ -52,6 +52,15 @@ export default function AppLayout() {
             >
               Products
             </NavLink>
+
+            <NavLink
+              to="/clients"
+              className={({ isActive }) =>
+                `${linkBaseClasses} ${isActive ? activeClasses : ""}`
+              }
+            >
+              Clients
+            </NavLink>
           </nav>
         </div>
 

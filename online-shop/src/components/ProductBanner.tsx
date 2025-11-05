@@ -24,15 +24,15 @@ const ProductBanner = ({ item }: ProductBannerProps) => {
     <>
       {contextHolder}
       <div className="border border-gray-200 rounded-lg py-6 px-8 flex flex-col items-center bg-white shadow-sm">
-        <div className="flex w-full max-w-3xl flex-row items-center gap-8 mb-6">
-          <div className="shrink-0 flex items-center justify-center w-56 h-56 bg-gray-50 rounded-md">
+        <div className="flex w-full max-w-3xl flex-row items-center gap-4 mb-6">
+          <div className="shrink-0 flex items-center justify-center w-48 h-48 rounded-md">
             <Image
               draggable={false}
               src={item.image}
               alt={item.title}
               fallback={fallbackImage}
-              height={200}
-              width={200}
+              height={150}
+              width={150}
               preview={{
                 mask: <span className="text-white">Clique para ampliar</span>,
               }}
@@ -41,7 +41,9 @@ const ProductBanner = ({ item }: ProductBannerProps) => {
           </div>
 
           <div className="flex flex-col flex-1">
-            <div className="font-semibold text-lg mb-2">{item.title}</div>
+            <div className="font-semibold mb-2 md:line-clamp-2">
+              {item.title}
+            </div>
             <div className="flex items-center gap-2 mb-2">
               <Rate allowHalf disabled defaultValue={item.rating.rate} />
               <span className="text-gray-400 text-sm">

@@ -4,6 +4,7 @@ import Home from "../pages/Home";
 import AppLayout from "./layout/AppLayout";
 import PrivateRoute from "./PrivateRoute";
 import Products from "../pages/Products";
+import Clients from "../pages/Clients";
 
 export default function AppRoutes() {
   return (
@@ -14,6 +15,7 @@ export default function AppRoutes() {
           <Route element={<AppLayout />}>
             <Route path="/home" element={<Home />} />
             <Route path="/products" element={<Products />} />
+            <Route path="/clients" element={<Clients />} />
           </Route>
         </Route>
         <Route path="*" element={<Login />} />

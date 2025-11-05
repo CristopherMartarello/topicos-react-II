@@ -29,12 +29,10 @@ const Products = () => {
   const [openModal, setOpenModal] = useState(false);
   const [form] = Form.useForm();
 
-  // 🔹 termo de busca vindo da SearchBar no Header
   const searchTerm = useSelector(
     (state: RootState) => state.products.searchTerm
   );
 
-  // 🔹 carregar produtos do LocalStorage ou API
   useEffect(() => {
     const loadProducts = async () => {
       try {
@@ -58,12 +56,10 @@ const Products = () => {
     loadProducts();
   }, []);
 
-  // 🔹 abrir modal
   const handleNewProductClick = () => {
     setOpenModal(true);
   };
 
-  // 🔹 adicionar novo produto e salvar no LocalStorage
   const handleAddProduct = async () => {
     try {
       const values = await form.validateFields();
@@ -84,14 +80,12 @@ const Products = () => {
     }
   };
 
-  // 🔹 aplicar filtro da SearchBar
   const filteredProducts = products.filter((p) =>
     p.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <div>
-      {/* Header da lista */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center font-semibold gap-2 text-xl">
           <ShoppingOutlined />
@@ -106,7 +100,6 @@ const Products = () => {
         </Button>
       </div>
 
-      {/* Lista ou feedback visual */}
       {loading ? (
         <div className="flex justify-center py-10">
           <Spin size="large" />
@@ -123,7 +116,6 @@ const Products = () => {
         </Row>
       )}
 
-      {/* Modal de novo produto */}
       <Modal
         title="New Product"
         open={openModal}

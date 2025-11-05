@@ -10,3 +10,13 @@ export const fetchTop5Products = async (): Promise<Product[]> => {
     throw error;
   }
 };
+
+export const fetchAllProducts = async (): Promise<Product[]> => {
+  try {
+    const response = await api.get<Product[]>("/products");
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao buscar produtos:", error);
+    throw error;
+  }
+};

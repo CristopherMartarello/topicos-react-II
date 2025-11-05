@@ -1,5 +1,5 @@
 import { Layout, theme } from "antd";
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
 import OnlineShopLogo from "../../assets/online-shop-logo.png";
 import SearchBar from "../../components/SearchBar";
 import LoginButton from "../../components/LoginButton";
@@ -16,6 +16,8 @@ export default function AppLayout() {
     (state: RootState) => state.auth.isAuthenticated
   );
   const username = useSelector((state: RootState) => state.auth.username);
+  const location = useLocation();
+  const isProductsPage = location.pathname === "/products";
 
   const linkBaseClasses =
     "text-gray-700 font-medium hover:text-blue-600 transition-colors";
@@ -53,7 +55,7 @@ export default function AppLayout() {
           </nav>
         </div>
 
-        <SearchBar />
+        {isProductsPage && <SearchBar />}
 
         <div className="flex gap-4">
           {isAuthenticated ? (

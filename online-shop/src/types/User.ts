@@ -13,9 +13,10 @@ export type User = {
     street: string;
     number: number;
     zipcode: string;
-    geolocation: {
+    geolocation?: {
       lat: string;
       long: string;
     };
   };
+  status?: string;
 };

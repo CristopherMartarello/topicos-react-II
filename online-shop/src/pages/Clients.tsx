@@ -1,7 +1,6 @@
 import {
   PlusOutlined,
   UserOutlined,
-  ExclamationCircleOutlined,
   DeleteFilled,
   EditFilled,
 } from "@ant-design/icons";
@@ -14,13 +13,14 @@ import {
   Tag,
   Tooltip,
   type TableProps,
-  Modal,
   message,
 } from "antd";
 import { useEffect, useState } from "react";
 import { fetchAllClients } from "../services/clientService";
 import type { User } from "../types/User";
 import ClientDrawer from "../components/ClientDrawer";
+import DeleteClientModal from "../components/DeleteClientModal";
+import CreateClientModal from "../components/CreateClientModal";
 import { capitalizeFirstLetter, randomPastDate } from "../utils/formatters";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../store/store";
@@ -46,6 +46,10 @@ const Clients = () => {
   const [selectedClient, setSelectedClient] = useState<User | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [clientToDelete, setClientToDelete] = useState<number | null>(null);
+
   const openDrawer = (client: User) => {
     setSelectedClient(client);
     setDrawerOpen(true);
@@ -56,24 +60,23 @@ const Clients = () => {
     setSelectedClient(null);
   };
 
-  const { confirm } = Modal;
-
-  const confirmDelete = (id: number) => {
-    confirm({
-      title: "Confirm deletion",
-      icon: <ExclamationCircleOutlined />,
-      content: "Are you sure you want to delete this client?",
-      okText: "Delete",
-      cancelText: "Cancel",
-      okButtonProps: { danger: true },
-      centered: true,
-      onOk: () => handleDelete(id),
-    });
+  const showDeleteModal = (id: number) => {
+    setClientToDelete(id);
+    setIsDeleteModalOpen(true);
   };
 
-  const handleDelete = (id: number) => {
-    dispatch(deleteClient(id));
-    message.success("Client deleted successfully!");
+  const handleOkDelete = () => {
+    if (clientToDelete !== null) {
+      dispatch(deleteClient(clientToDelete));
+      message.success("Client deleted successfully!");
+    }
+    setIsDeleteModalOpen(false);
+    setClientToDelete(null);
+  };
+
+  const handleCancelDelete = () => {
+    setIsDeleteModalOpen(false);
+    setClientToDelete(null);
   };
 
   const columns: TableProps<DataType>["columns"] = [
@@ -143,10 +146,12 @@ const Clients = () => {
               }}
             />
           </Tooltip>
+
           <Tooltip title="Delete">
             <DeleteFilled
-              className="text-red-500 cursor-pointer"
-              onClick={() => confirmDelete(Number(record.key))}
+              style={{ color: "red" }}
+              className="cursor-pointer"
+              onClick={() => showDeleteModal(Number(record.key))}
             />
           </Tooltip>
         </Space>
@@ -155,7 +160,7 @@ const Clients = () => {
   ];
 
   const data: DataType[] = clients.map((client) => ({
-    key: client.id?.toString() || "",
+    key: String(client.id),
     name: {
       firstname: capitalizeFirstLetter(client.name.firstname),
       lastname: capitalizeFirstLetter(client.name.lastname),
@@ -183,10 +188,6 @@ const Clients = () => {
     loadClients();
   }, [dispatch]);
 
-  const handleNewProductClick = () => {
-    console.log("New Client Clicked");
-  };
-
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
@@ -194,10 +195,11 @@ const Clients = () => {
           <UserOutlined />
           List of Clients
         </div>
+
         <Button
           type="primary"
           icon={<PlusOutlined />}
-          onClick={handleNewProductClick}
+          onClick={() => setIsCreateModalOpen(true)}
         >
           New Client
         </Button>
@@ -212,6 +214,18 @@ const Clients = () => {
       ) : (
         <Table<DataType> columns={columns} dataSource={data} />
       )}
+
+      <DeleteClientModal
+        open={isDeleteModalOpen}
+        onOk={handleOkDelete}
+        onCancel={handleCancelDelete}
+      />
+
+      <CreateClientModal
+        open={isCreateModalOpen}
+        onCancel={() => setIsCreateModalOpen(false)}
+        clients={clients}
+      />
 
       <ClientDrawer
         open={drawerOpen}

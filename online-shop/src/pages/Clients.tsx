@@ -177,10 +177,10 @@ const Clients = () => {
   useEffect(() => {
     const loadClients = async () => {
       try {
-        const data = await fetchAllClients();
-        dispatch(setClients(data));
-      } catch (error) {
-        console.error(error);
+        if (clients.length === 0) {
+          const apiData = await fetchAllClients();
+          dispatch(setClients(apiData));
+        }
       } finally {
         setLoading(false);
       }
@@ -224,14 +224,12 @@ const Clients = () => {
       <CreateClientModal
         open={isCreateModalOpen}
         onCancel={() => setIsCreateModalOpen(false)}
-        clients={clients}
       />
 
       <ClientDrawer
         open={drawerOpen}
         onClose={closeDrawer}
         client={selectedClient}
-        allClients={clients}
       />
     </div>
   );

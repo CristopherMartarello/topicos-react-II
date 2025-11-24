@@ -3,7 +3,6 @@ import type { User } from "../types/User";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { updateClient } from "../store/clientSlice";
-import { saveClients } from "../services/storageService";
 
 const { Option } = Select;
 
@@ -11,15 +10,9 @@ interface ClientDrawerProps {
   open: boolean;
   onClose: () => void;
   client: User | null;
-  allClients: User[];
 }
 
-const ClientDrawer = ({
-  open,
-  onClose,
-  client,
-  allClients,
-}: ClientDrawerProps) => {
+const ClientDrawer = ({ open, onClose, client }: ClientDrawerProps) => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
   const [api, contextHolder] = notification.useNotification();
@@ -63,12 +56,7 @@ const ClientDrawer = ({
         phone: values.phone,
       };
 
-      const updatedList = allClients.map((c) =>
-        c.id === updatedClient.id ? updatedClient : c
-      );
-
       dispatch(updateClient(updatedClient));
-      saveClients(updatedList);
 
       api.success({
         message: "Sucesso!",

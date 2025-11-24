@@ -7,10 +7,13 @@ import CartButton from "../../components/CartButton";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store/store";
 import UserProfileButton from "../../components/UserProfileButton";
+import ThemeButton from "../../components/ThemeButton";
+import { useTheme } from "../../context/ThemeContext";
 
 const { Header, Content, Footer } = Layout;
 
 export default function AppLayout() {
+  const { darkMode } = useTheme();
   const { token } = theme.useToken();
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.isAuthenticated
@@ -26,7 +29,13 @@ export default function AppLayout() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <Header className="flex flex-row items-center shadow-md bg-[#e6f4ff]! justify-between px-6">
+      <Header
+        className="flex flex-row items-center shadow-md justify-between px-6"
+        style={{
+          backgroundColor: darkMode ? "#0A1A2F" : "#e6f4ff",
+          color: darkMode ? "#ffffff" : "#1f1f1f",
+        }}
+      >
         <div className="flex items-center gap-8">
           <img
             src={OnlineShopLogo}
@@ -66,13 +75,14 @@ export default function AppLayout() {
 
         {isProductsPage && <SearchBar />}
 
-        <div className="flex gap-4">
+        <div className="flex items-center gap-4">
           {isAuthenticated ? (
             <UserProfileButton username={username || "Usuário"} />
           ) : (
             <LoginButton />
           )}
           <CartButton />
+          <ThemeButton />
         </div>
       </Header>
 

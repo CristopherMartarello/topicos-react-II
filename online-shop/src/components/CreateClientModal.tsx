@@ -1,23 +1,17 @@
 import { Modal, Form, Input, Select, notification } from "antd";
 import { useEffect } from "react";
 import type { User } from "../types/User";
-import { saveClients } from "../services/storageService";
 import { useDispatch } from "react-redux";
-import { setClients } from "../store/clientSlice";
+import { addClient } from "../store/clientSlice";
 
 const { Option } = Select;
 
 interface CreateClientModalProps {
   open: boolean;
   onCancel: () => void;
-  clients: User[];
 }
 
-const CreateClientModal = ({
-  open,
-  onCancel,
-  clients,
-}: CreateClientModalProps) => {
+const CreateClientModal = ({ open, onCancel }: CreateClientModalProps) => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
   const [api, contextHolder] = notification.useNotification();
@@ -43,10 +37,7 @@ const CreateClientModal = ({
         phone: values.phone,
       };
 
-      const updatedList = [...clients, newClient];
-
-      dispatch(setClients(updatedList));
-      saveClients(updatedList);
+      dispatch(addClient(newClient)); //  Redux quem faz tudo
 
       api.success({
         message: "Sucesso!",
@@ -54,8 +45,10 @@ const CreateClientModal = ({
         placement: "top",
       });
 
-      form.resetFields();
-      onCancel();
+      setTimeout(() => {
+        form.resetFields();
+        onCancel();
+      }, 150);
     } catch (err) {
       console.error(err);
     }

@@ -1,4 +1,4 @@
-import { Layout, theme } from "antd";
+import { Drawer, Layout, theme } from "antd";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import OnlineShopLogo from "../../assets/online-shop-logo.png";
 import SearchBar from "../../components/SearchBar";
@@ -11,6 +11,7 @@ import ThemeButton from "../../components/ThemeButton";
 import { useTheme } from "../../context/ThemeContext";
 import { useState } from "react";
 import CartDrawer from "../../components/CartDrawer";
+import { MenuOutlined } from "@ant-design/icons";
 
 const { Header, Content, Footer } = Layout;
 
@@ -24,6 +25,7 @@ export default function AppLayout() {
   const location = useLocation();
   const isProductsPage = location.pathname === "/products";
   const [cartOpen, setCartOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const linkBaseClasses =
     "text-gray-700 font-medium hover:text-blue-600 transition-colors";
@@ -33,20 +35,20 @@ export default function AppLayout() {
   return (
     <div className="flex min-h-screen flex-col">
       <Header
-        className="flex flex-row items-center shadow-md justify-between px-6"
+        className="flex items-center shadow-md justify-between px-4 h-16"
         style={{
           backgroundColor: darkMode ? "#0A1A2F" : "#e6f4ff",
           color: darkMode ? "#ffffff" : "#1f1f1f",
         }}
       >
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-6">
           <img
             src={OnlineShopLogo}
             alt="Online Shop Logo"
-            className="mr-4 h-12"
+            className="h-10 sm:h-12 md:h-14 mr-4 shrink-0 object-contain"
           />
 
-          <nav className="flex gap-6">
+          <nav className="hidden lg:flex gap-6">
             <NavLink
               to="/home"
               className={({ isActive }) =>
@@ -76,17 +78,54 @@ export default function AppLayout() {
           </nav>
         </div>
 
-        {isProductsPage && <SearchBar />}
+        <div className="hidden lg:flex">{isProductsPage && <SearchBar />}</div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           {isAuthenticated ? (
             <UserProfileButton username={username || "Usuário"} />
           ) : (
             <LoginButton />
           )}
+
           <CartButton onClick={() => setCartOpen(true)} />
           <ThemeButton />
+
+          <button
+            className="lg:hidden text-xl"
+            onClick={() => setMenuOpen(true)}
+          >
+            <MenuOutlined />
+          </button>
         </div>
+
+        <Drawer
+          placement="left"
+          open={menuOpen}
+          onClose={() => setMenuOpen(false)}
+          width={300}
+          bodyStyle={{
+            backgroundColor: darkMode ? "#0A1A2F" : "#ffffff",
+            padding: 20,
+          }}
+        >
+          <nav className="flex flex-col gap-4 text-lg">
+            <NavLink to="/home" onClick={() => setMenuOpen(false)}>
+              Home
+            </NavLink>
+            <NavLink to="/products" onClick={() => setMenuOpen(false)}>
+              Products
+            </NavLink>
+            <NavLink to="/clients" onClick={() => setMenuOpen(false)}>
+              Clients
+            </NavLink>
+          </nav>
+
+          {isProductsPage && (
+            <div className="mt-6">
+              <SearchBar />
+            </div>
+          )}
+        </Drawer>
       </Header>
 
       <Content

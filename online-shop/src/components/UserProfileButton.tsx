@@ -1,5 +1,5 @@
 import { UserOutlined, LogoutOutlined } from "@ant-design/icons";
-import { Button, Dropdown, type MenuProps, Space } from "antd";
+import { Button, Dropdown, type MenuProps } from "antd";
 import { useDispatch } from "react-redux";
 import { logout } from "../store/authSlice";
 
@@ -54,7 +54,7 @@ const UserProfileButton = ({ username }: UserProfileButtonProps) => {
         icon={<UserOutlined />}
         className="font-medium"
       >
-        <Space>{username}</Space>
+        <span className="hidden sm:inline">{username}</span>
       </Button>
     </Dropdown>
   );

@@ -13,7 +13,7 @@ const CartButton = ({ onClick }: { onClick: () => void }) => {
         icon={<ShoppingCartOutlined />}
         onClick={onClick}
       >
-        Cart
+        <span className="hidden sm:inline">Cart</span>
       </Button>
     </Badge>
   );

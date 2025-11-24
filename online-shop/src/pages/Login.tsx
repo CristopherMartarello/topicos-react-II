@@ -1,31 +1,39 @@
 import type { FormProps } from "antd";
 import { useDispatch } from "react-redux";
-import { Button, Form, Input, notification } from "antd";
+import {
+  Button,
+  Form,
+  Input,
+  notification,
+  theme,
+  Typography,
+  Divider,
+} from "antd";
+import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import { loginUser } from "../services/userService";
 import { login } from "../store/authSlice";
 import { useNavigate } from "react-router-dom";
+import { useTheme } from "../context/ThemeContext";
+
+const { Title, Text } = Typography;
 
 const Login = () => {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { darkMode } = useTheme();
+  const { token } = theme.useToken();
 
   const [api, contextHolder] = notification.useNotification();
 
-  const notifyError = () => {
-    api.error({
-      message: "Erro!",
+  const notify = (type: "success" | "error") => {
+    api[type]({
+      message: type === "success" ? "Sucesso!" : "Erro!",
       description:
-        "Erro ao entrar na conta. Por favor, verifique suas credenciais.",
-      placement: "top",
-    });
-  };
-
-  const notifySuccess = () => {
-    api.success({
-      message: "Sucesso!",
-      description: "Login realizado com sucesso.",
+        type === "success"
+          ? "Login realizado com sucesso."
+          : "Erro ao entrar. Verifique suas credenciais.",
       placement: "top",
     });
   };
@@ -45,65 +53,110 @@ const Login = () => {
 
       if (response?.token) {
         dispatch(login({ username, password, token: response.token }));
-        notifySuccess();
+        notify("success");
         navigate("/home");
-      } else {
-        notifyError();
-      }
+      } else notify("error");
     } catch (err) {
       console.error(err);
-      notifyError();
+      notify("error");
     } finally {
       setLoading(false);
     }
   };
 
-  const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (
-    errorInfo
-  ) => {
-    console.log("Failed:", errorInfo);
-  };
-
   return (
-    <div className="flex justify-center items-center min-h-screen bg-red-50">
+    <div
+      className="flex justify-center items-center min-h-screen px-4 transition-all"
+      style={{
+        background: darkMode
+          ? "linear-gradient(135deg, #0f2027, #203a43, #2c5364)"
+          : "linear-gradient(135deg, #e0f3ff, #cbe6ff, #f0faff)",
+      }}
+    >
       {contextHolder}
-      <Form
-        name="basic"
-        labelCol={{ span: 8 }}
-        wrapperCol={{ span: 16 }}
-        style={{ maxWidth: 400, width: "100%" }}
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
-        autoComplete="off"
-        className="bg-white rounded-2xl p-6! shadow-md"
+
+      <div
+        className="rounded-2xl shadow-xl p-8 w-full max-w-md transition-all"
+        style={{
+          backgroundColor: darkMode ? "#1f1f1f" : "#ffffff",
+          border: `1px solid ${
+            darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"
+          }`,
+        }}
       >
-        <Form.Item<FieldType>
-          label="Usuário"
-          name="username"
-          rules={[{ required: true, message: "Please input your username!" }]}
+        <Title
+          level={2}
+          style={{ textAlign: "center", color: token.colorText }}
         >
-          <Input />
-        </Form.Item>
+          Bem-vindo
+        </Title>
 
-        <Form.Item<FieldType>
-          label="Senha"
-          name="password"
-          rules={[{ required: true, message: "Please input your password!" }]}
+        <Text
+          style={{
+            display: "block",
+            textAlign: "center",
+            marginBottom: 20,
+            color: token.colorTextSecondary,
+          }}
         >
-          <Input.Password />
-        </Form.Item>
+          Faça login para continuar
+        </Text>
 
-        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+        <Divider />
+
+        <Form
+          name="login"
+          layout="vertical"
+          onFinish={onFinish}
+          autoComplete="off"
+        >
+          <Form.Item<FieldType>
+            label={<span className="font-medium">Usuário</span>}
+            name="username"
+            rules={[{ required: true, message: "Digite seu usuário" }]}
+          >
+            <Input
+              size="large"
+              prefix={<UserOutlined />}
+              placeholder="Seu usuário"
+            />
+          </Form.Item>
+
+          <Form.Item<FieldType>
+            label={<span className="font-medium">Senha</span>}
+            name="password"
+            rules={[{ required: true, message: "Digite sua senha" }]}
+          >
+            <Input.Password
+              size="large"
+              prefix={<LockOutlined />}
+              placeholder="Sua senha"
+            />
+          </Form.Item>
+
           <Button
             type="primary"
             htmlType="submit"
-            className="w-full"
             loading={loading}
+            size="large"
+            className="mt-2 w-full"
           >
-            Enviar
+            Entrar
           </Button>
-        </Form.Item>
-      </Form>
+        </Form>
+
+        <Divider />
+
+        <Text
+          style={{
+            display: "block",
+            textAlign: "center",
+            color: token.colorTextSecondary,
+          }}
+        >
+          Online Shop IFSC - Cristopher e Fernando
+        </Text>
+      </div>
     </div>
   );
 };

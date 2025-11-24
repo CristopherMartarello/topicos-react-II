@@ -1,12 +1,21 @@
-import { Button } from "antd";
+import { Badge, Button } from "antd";
 import { ShoppingCartOutlined } from "@ant-design/icons";
+import { useSelector } from "react-redux";
+import type { RootState } from "../store/store";
 
-const CartButton = () => {
+const CartButton = ({ onClick }: { onClick: () => void }) => {
+  const total = useSelector((state: RootState) => state.cart.items.length);
   return (
-    <Button color="default" variant="filled">
-      <ShoppingCartOutlined />
-      Cart
-    </Button>
+    <Badge count={total} showZero>
+      <Button
+        color="default"
+        variant="filled"
+        icon={<ShoppingCartOutlined />}
+        onClick={onClick}
+      >
+        Cart
+      </Button>
+    </Badge>
   );
 };
 

@@ -9,6 +9,8 @@ import type { RootState } from "../../store/store";
 import UserProfileButton from "../../components/UserProfileButton";
 import ThemeButton from "../../components/ThemeButton";
 import { useTheme } from "../../context/ThemeContext";
+import { useState } from "react";
+import CartDrawer from "../../components/CartDrawer";
 
 const { Header, Content, Footer } = Layout;
 
@@ -21,6 +23,7 @@ export default function AppLayout() {
   const username = useSelector((state: RootState) => state.auth.username);
   const location = useLocation();
   const isProductsPage = location.pathname === "/products";
+  const [cartOpen, setCartOpen] = useState(false);
 
   const linkBaseClasses =
     "text-gray-700 font-medium hover:text-blue-600 transition-colors";
@@ -81,7 +84,7 @@ export default function AppLayout() {
           ) : (
             <LoginButton />
           )}
-          <CartButton />
+          <CartButton onClick={() => setCartOpen(true)} />
           <ThemeButton />
         </div>
       </Header>
@@ -104,6 +107,7 @@ export default function AppLayout() {
         Online Shop | IFSC ©{new Date().getFullYear()} Created by Cristopher and
         Fernando
       </Footer>
+      <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
     </div>
   );
 }

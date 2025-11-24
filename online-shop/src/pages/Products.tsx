@@ -16,18 +16,30 @@ import { useSelector } from "react-redux";
 import { fetchAllProducts } from "../services/productService";
 import type { Product } from "../types/Product";
 import ProductBanner from "../components/ProductBanner";
+
+import ProductDrawer from "../components/ProductDrawer";
+import DeleteProductModal from "../components/DeleteProductModal";
+
 import {
   addProduct,
   getProducts,
   saveProducts,
 } from "../services/storageService";
+
 import type { RootState } from "../store/store";
 
 const Products = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [openModal, setOpenModal] = useState(false);
-  const [form] = Form.useForm();
+
+  const [openCreateModal, setOpenCreateModal] = useState(false);
+  const [createForm] = Form.useForm();
+
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [productToEdit, setProductToEdit] = useState<Product | null>(null);
+
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState<number | null>(null);
 
   const searchTerm = useSelector(
     (state: RootState) => state.products.searchTerm
@@ -37,15 +49,16 @@ const Products = () => {
     const loadProducts = async () => {
       try {
         const localData = getProducts();
+
         if (localData.length > 0) {
           setProducts(localData);
           setLoading(false);
           return;
         }
 
-        const data = await fetchAllProducts();
-        setProducts(data);
-        saveProducts(data);
+        const apiData = await fetchAllProducts();
+        setProducts(apiData);
+        saveProducts(apiData);
       } catch (error) {
         console.error(error);
       } finally {
@@ -56,13 +69,10 @@ const Products = () => {
     loadProducts();
   }, []);
 
-  const handleNewProductClick = () => {
-    setOpenModal(true);
-  };
-
   const handleAddProduct = async () => {
     try {
-      const values = await form.validateFields();
+      const values = await createForm.validateFields();
+
       const newProduct: Product = {
         ...values,
         id: Date.now(),
@@ -72,12 +82,50 @@ const Products = () => {
       const updated = addProduct(newProduct);
       setProducts(updated);
 
-      message.success("Produto cadastrado com sucesso!");
-      form.resetFields();
-      setOpenModal(false);
+      message.success("Product created successfully!");
+      createForm.resetFields();
+      setOpenCreateModal(false);
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const openDrawer = (product: Product) => {
+    setProductToEdit(product);
+    setDrawerOpen(true);
+  };
+
+  const closeDrawer = () => {
+    setProductToEdit(null);
+    setDrawerOpen(false);
+  };
+
+  const handleUpdateProduct = (updatedProduct: Product) => {
+    const updated = products.map((p) =>
+      p.id === updatedProduct.id ? updatedProduct : p
+    );
+
+    saveProducts(updated);
+    setProducts(updated);
+
+    message.success("Product updated successfully!");
+    closeDrawer();
+  };
+
+  const showDeleteModal = (id: number) => {
+    setProductToDelete(id);
+    setDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (productToDelete !== null) {
+      const updated = products.filter((p) => p.id !== productToDelete);
+      saveProducts(updated);
+      setProducts(updated);
+      message.success("Product deleted!");
+    }
+    setDeleteModalOpen(false);
+    setProductToDelete(null);
   };
 
   const filteredProducts = products.filter((p) =>
@@ -94,7 +142,7 @@ const Products = () => {
         <Button
           type="primary"
           icon={<PlusOutlined />}
-          onClick={handleNewProductClick}
+          onClick={() => setOpenCreateModal(true)}
         >
           New Product
         </Button>
@@ -110,7 +158,11 @@ const Products = () => {
         <Row gutter={[24, 24]}>
           {filteredProducts.map((item) => (
             <Col key={item.id} xs={24} sm={12} lg={8}>
-              <ProductBanner item={item} />
+              <ProductBanner
+                item={item}
+                onEdit={() => openDrawer(item)}
+                onDelete={() => showDeleteModal(item.id)}
+              />
             </Col>
           ))}
         </Row>
@@ -118,15 +170,14 @@ const Products = () => {
 
       <Modal
         title="New Product"
-        open={openModal}
-        onCancel={() => setOpenModal(false)}
+        open={openCreateModal}
+        onCancel={() => setOpenCreateModal(false)}
         footer={null}
-        maskClosable={false}
-        keyboard={false}
         centered
+        maskClosable={false}
       >
         <Form
-          form={form}
+          form={createForm}
           layout="vertical"
           className="mt-2"
           initialValues={{ price: 0 }}
@@ -160,31 +211,34 @@ const Products = () => {
             name="price"
             rules={[{ required: true, message: "Please enter a price" }]}
           >
-            <InputNumber
-              prefix="$"
-              className="w-full"
-              min={0}
-              formatter={(v) => `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-            />
+            <InputNumber prefix="$" className="w-full" min={0} />
           </Form.Item>
 
-          <Form.Item
-            label="Image"
-            name="image"
-            rules={[{ message: "Please enter an image URL" }]}
-            extra="URL image"
-          >
+          <Form.Item label="Image" name="image" extra="URL image">
             <Input placeholder="https://example.com/image.jpg" />
           </Form.Item>
 
           <div className="flex justify-end gap-3 mt-6">
-            <Button onClick={() => setOpenModal(false)}>Cancel</Button>
+            <Button onClick={() => setOpenCreateModal(false)}>Cancel</Button>
             <Button type="primary" onClick={handleAddProduct}>
               Save
             </Button>
           </div>
         </Form>
       </Modal>
+
+      <ProductDrawer
+        open={drawerOpen}
+        onClose={closeDrawer}
+        product={productToEdit}
+        onSave={handleUpdateProduct}
+      />
+
+      <DeleteProductModal
+        open={deleteModalOpen}
+        onCancel={() => setDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+      />
     </div>
   );
 };

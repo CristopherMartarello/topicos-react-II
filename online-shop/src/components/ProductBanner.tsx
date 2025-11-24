@@ -1,13 +1,16 @@
-import { Button, Image, Rate, notification, theme } from "antd";
+import { Button, Image, Rate, notification, theme, Tooltip } from "antd";
+import { EditFilled, DeleteFilled } from "@ant-design/icons";
 import type { Product } from "../types/Product";
 
 const fallbackImage = "...";
 
 interface ProductBannerProps {
   item: Product;
+  onEdit?: (product: Product) => void;
+  onDelete?: (id: number) => void;
 }
 
-const ProductBanner = ({ item }: ProductBannerProps) => {
+const ProductBanner = ({ item, onEdit, onDelete }: ProductBannerProps) => {
   const [api, contextHolder] = notification.useNotification();
   const { token } = theme.useToken();
 
@@ -31,8 +34,24 @@ const ProductBanner = ({ item }: ProductBannerProps) => {
           padding: "24px 32px",
           boxShadow: token.boxShadowTertiary,
         }}
-        className="flex flex-col items-center"
+        className="flex flex-col items-center relative"
       >
+        <div className="absolute top-3 right-3 flex gap-3">
+          <Tooltip title="Edit">
+            <EditFilled
+              className="cursor-pointer text-blue-500 text-lg"
+              onClick={() => onEdit?.(item)}
+            />
+          </Tooltip>
+
+          <Tooltip title="Delete">
+            <DeleteFilled
+              className="cursor-pointer text-red-500 text-lg"
+              onClick={() => onDelete?.(item.id)}
+            />
+          </Tooltip>
+        </div>
+
         <div className="flex w-full max-w-3xl flex-row items-center gap-4 mb-6">
           <div className="shrink-0 flex items-center justify-center w-48 h-48 rounded-md">
             <Image

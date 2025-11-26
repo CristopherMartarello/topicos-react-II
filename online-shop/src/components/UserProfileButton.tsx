@@ -2,6 +2,7 @@ import { UserOutlined, LogoutOutlined } from "@ant-design/icons";
 import { Button, Dropdown, type MenuProps } from "antd";
 import { useDispatch } from "react-redux";
 import { logout } from "../store/authSlice";
+import { setCartUser } from "../store/cartSlice";
 
 interface UserProfileButtonProps {
   username: string;
@@ -12,6 +13,7 @@ const UserProfileButton = ({ username }: UserProfileButtonProps) => {
 
   const handleLogout = () => {
     dispatch(logout());
+    dispatch(setCartUser(""));
   };
 
   const items: MenuProps["items"] = [

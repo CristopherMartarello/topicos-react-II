@@ -143,7 +143,7 @@ const ProductBanner = ({ item, onEdit, onDelete }: ProductBannerProps) => {
               items-center 
               gap-1 
               text-lg 
-              mb-3
+              m-4
             "
             style={{ color: token.colorText }}
           >

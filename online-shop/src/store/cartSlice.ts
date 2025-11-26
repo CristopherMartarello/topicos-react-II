@@ -7,28 +7,39 @@ export interface CartItem extends Product {
 
 interface CartState {
   items: CartItem[];
+  currentUser: string | null;
 }
 
-const CART_STORAGE_KEY = "cart";
+const getStorageKey = (user: string) => `cart_${user}`;
 
-const loadCart = (): CartItem[] => {
-  const stored = localStorage.getItem(CART_STORAGE_KEY);
+const loadCart = (user: string | null): CartItem[] => {
+  if (!user) return [];
+  const stored = localStorage.getItem(getStorageKey(user));
   return stored ? JSON.parse(stored) : [];
 };
 
-const saveCart = (items: CartItem[]) => {
-  localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+const saveCart = (user: string | null, items: CartItem[]) => {
+  if (!user) return;
+  localStorage.setItem(getStorageKey(user), JSON.stringify(items));
 };
 
 const initialState: CartState = {
-  items: loadCart(),
+  items: [],
+  currentUser: null,
 };
 
 const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
+    setCartUser: (state, action: PayloadAction<string>) => {
+      state.currentUser = action.payload;
+      state.items = loadCart(action.payload);
+    },
+
     addToCart: (state, action: PayloadAction<Product>) => {
+      if (!state.currentUser) return;
+
       const existing = state.items.find((i) => i.id === action.payload.id);
 
       if (existing) {
@@ -37,43 +48,39 @@ const cartSlice = createSlice({
         state.items.push({ ...action.payload, quantity: 1 });
       }
 
-      saveCart(state.items);
-    },
-
-    removeFromCart: (state, action: PayloadAction<number>) => {
-      state.items = state.items.filter((i) => i.id !== action.payload);
-      saveCart(state.items);
-    },
-
-    clearCart: (state) => {
-      state.items = [];
-      saveCart(state.items);
+      saveCart(state.currentUser, state.items);
     },
 
     increaseQuantity: (state, action: PayloadAction<number>) => {
       const item = state.items.find((i) => i.id === action.payload);
-      if (item) {
-        item.quantity += 1;
-      }
+      if (item) item.quantity++;
+      saveCart(state.currentUser, state.items);
     },
 
     decreaseQuantity: (state, action: PayloadAction<number>) => {
       const item = state.items.find((i) => i.id === action.payload);
       if (item) {
-        item.quantity -= 1;
+        item.quantity--;
         if (item.quantity <= 0) {
           state.items = state.items.filter((i) => i.id !== action.payload);
         }
       }
+      saveCart(state.currentUser, state.items);
+    },
+
+    clearCart: (state) => {
+      state.items = [];
+      saveCart(state.currentUser, state.items);
     },
   },
 });
 
 export const {
+  setCartUser,
   addToCart,
-  removeFromCart,
-  clearCart,
   increaseQuantity,
   decreaseQuantity,
+  clearCart,
 } = cartSlice.actions;
+
 export default cartSlice.reducer;

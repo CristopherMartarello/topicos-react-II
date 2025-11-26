@@ -15,6 +15,7 @@ import { loginUser } from "../services/userService";
 import { login } from "../store/authSlice";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
+import { setCartUser } from "../store/cartSlice";
 
 const { Title, Text } = Typography;
 
@@ -53,6 +54,7 @@ const Login = () => {
 
       if (response?.token) {
         dispatch(login({ username, password, token: response.token }));
+        dispatch(setCartUser(username));
         notify("success");
         navigate("/home");
       } else notify("error");
